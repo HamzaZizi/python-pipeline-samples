@@ -14,7 +14,7 @@ spec:
         app: python-pipeline-samples
     spec:
       containers:
-      - image: hamzazizi/python-pipeline-samples:3
+      - image: hamzazizi/python-pipeline-samples:latest
         name: python-pipeline-samples
         ports:
         - containerPort: 80
