@@ -14,7 +14,7 @@ spec:
         app: python-pipeline-samples
     spec:
       containers:
-      - image: gcr.io/heptio-images/ks-guestbook-demo:0.1
+      - image: hamzazizi/python-pipeline-samples:2
         name: python-pipeline-samples
         ports:
         - containerPort: 80
