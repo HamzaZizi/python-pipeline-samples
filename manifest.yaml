@@ -70,6 +70,8 @@ spec:
           image: appdynamics/dl-proxy:latest
           imagePullPolicy: Always
           env:
+            - name: APPDYNAMICS_PROXY_REGISTER_ON_STARTUP
+              value: "true"
             - name: APPDYNAMICS_DEBUG_LOG
               value: "on"
             - name: APPDYNAMICS_LOGGING_LEVEL
@@ -80,6 +82,7 @@ spec:
               value: "9091"
             - name: APPDYNAMICS_TCP_PORT_RANGE
               value: "10000-10100"
+              
           ports:
             - containerPort: 9091
               protocol: TCP
