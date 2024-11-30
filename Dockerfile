@@ -6,7 +6,7 @@
 
 
 FROM python:3.10.6-alpine
-ENV APPD_AGENT_VERSION=21.12.2.4693
+ENV APPD_AGENT_VERSION=24.11.0
 
 WORKDIR /python-pipeline-samples
 ADD . /python-pipeline-samples
