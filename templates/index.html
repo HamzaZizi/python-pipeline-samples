@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+<!-- <!DOCTYPE html>
 <html lang="en">
     <head>
         <meta charset="UTF-8">
@@ -6,5 +6,30 @@
     </head>
     <body>
         <h1>Hello World!</h1>
+    </body>
+</html>
+ -->
+
+
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta charset="UTF-8">
+        <title>Hey, welcome to harness</title>
+        <script>
+            function generateRandomNumber() {
+                fetch('/generate_random')
+                    .then(response => response.json())
+                    .then(data => {
+                        document.getElementById('randomNumber').textContent = "Generated Number: " + data.random_number;
+                    })
+                    .catch(error => console.error('Error:', error));
+            }
+        </script>
+    </head>
+    <body>
+        <h1>Hello World!</h1>
+        <button onclick="generateRandomNumber()">Generate Random Number</button>
+        <p id="randomNumber"></p>
     </body>
 </html>
