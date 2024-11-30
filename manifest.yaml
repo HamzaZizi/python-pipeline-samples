@@ -37,8 +37,8 @@ kind: Deployment
 metadata:
   name: python-pipeline-samples
 spec:
-  replicas: 3
-  revisionHistoryLimit: 3
+  replicas: 5
+  revisionHistoryLimit: 5
   selector:
     matchLabels:
       app: python-pipeline-samples
@@ -50,8 +50,9 @@ spec:
       containers:
         - name: python-pipeline-samples
           image: hamzazizi/python-pipeline-samples:latest
-          ports:
-            - containerPort: 80
+          imagePullPolicy: Always
+          # ports:
+          #   - containerPort: 80
           env:
             - name: APPDYNAMICS_AGENT_TIER_NAME
               value: python-pipeline-samples
@@ -65,9 +66,9 @@ spec:
           envFrom:
             - configMapRef:
                 name: appd-python-config
-
-        - name: appdynamics-agent
+        - name: proxy
           image: appdynamics/dl-proxy:latest
+          imagePullPolicy: Always
           env:
             - name: APPDYNAMICS_DEBUG_LOG
               value: "on"
@@ -90,7 +91,6 @@ spec:
               cpu: 400m
               memory: 600M
       restartPolicy: Always
-
 ---
 apiVersion: v1
 kind: Service
@@ -103,4 +103,3 @@ spec:
     - port: 80
       targetPort: 80
   type: LoadBalancer
-
