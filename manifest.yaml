@@ -163,7 +163,6 @@ spec:
         - name: python-pipeline-samples
           emptyDir: {}
       restartPolicy: Always
-# ---
 apiVersion: v1
 kind: Service
 metadata:
