@@ -32,66 +32,138 @@
 #     app: python-pipeline-samples
 
 
+# apiVersion: apps/v1
+# kind: Deployment
+# metadata:
+#   name: python-pipeline-samples
+# spec:
+#   replicas: 5
+#   revisionHistoryLimit: 5
+#   selector:
+#     matchLabels:
+#       app: python-pipeline-samples
+#   template:
+#     metadata:
+#       labels:
+#         app: python-pipeline-samples
+#     spec:
+#       containers:
+#         - name: python-pipeline-samples
+#           image: hamzazizi/python-pipeline-samples:latest
+#           imagePullPolicy: Always
+#           # ports:
+#           #   - containerPort: 80
+#           env:
+#             - name: APPDYNAMICS_AGENT_TIER_NAME
+#               value: python-pipeline-samples
+#             - name: APPDYNAMICS_AGENT_REUSE_NODE_NAME_PREFIX
+#               value: python-service
+#             - name: APPDYNAMICS_AGENT_ACCOUNT_ACCESS_KEY
+#               valueFrom:
+#                 secretKeyRef:
+#                   key: access-key
+#                   name: appd-agent-secret
+#           envFrom:
+#             - configMapRef:
+#                 name: appd-python-config
+#         - name: proxy
+#           image: appdynamics/dl-proxy:latest
+#           imagePullPolicy: Always
+#           env:
+#             - name: APPDYNAMICS_DEBUG_LOG
+#               value: "on"
+#             - name: APPDYNAMICS_LOGGING_LEVEL
+#               value: "debug"
+#             - name: APPDYNAMICS_TCP_COMM_HOST
+#               value: "0.0.0.0"
+#             - name: APPDYNAMICS_TCP_COMM_PORT
+#               value: "9091"
+#             - name: APPDYNAMICS_TCP_PORT_RANGE
+#               value: "10000-10100"
+#           ports:
+#             - containerPort: 9091
+#               protocol: TCP
+#           resources:
+#             limits:
+#               cpu: 500m
+#               memory: 900M
+#             requests:
+#               cpu: 400m
+#               memory: 600M
+#       restartPolicy: Always
+# ---
+# apiVersion: v1
+# kind: Service
+# metadata:
+#   name: python-pipeline-samples
+# spec:
+#   selector:
+#     app: python-pipeline-samples
+#   ports:
+#     - port: 80
+#       targetPort: 80
+#   type: LoadBalancer
+
+
+
 apiVersion: apps/v1
 kind: Deployment
 metadata:
   name: python-pipeline-samples
 spec:
-  replicas: 5
-  revisionHistoryLimit: 5
   selector:
     matchLabels:
-      app: python-pipeline-samples
+      name: python-pipeline-samples
+  replicas: 1
   template:
     metadata:
       labels:
-        app: python-pipeline-samples
+        name: python-pipeline-samples
     spec:
+      initContainers:
+      - name: python-pipeline-samples
+        command:
+        - cp
+        - -r
+        - /opt/appdynamics/.
+        - /opt/temp
+        image: docker.io/appdynamics/python-agent-init:1.0
+        imagePullPolicy: Always
+        volumeMounts:
+        - mountPath: /opt/temp
+          name: python-pipeline-samples
       containers:
-        - name: python-pipeline-samples
-          image: hamzazizi/python-pipeline-samples:latest
+        - name: python-pipeline-samplest
+          image: myrepo/python-app-no-appd:v1
+          command: ["/bin/sh"]
+          args: ["-c", "/opt/appdynamics-python/run-with-agent.sh"]
           imagePullPolicy: Always
-          # ports:
-          #   - containerPort: 80
           env:
-            - name: APPDYNAMICS_AGENT_TIER_NAME
-              value: python-pipeline-samples
-            - name: APPDYNAMICS_AGENT_REUSE_NODE_NAME_PREFIX
-              value: python-service
-            - name: APPDYNAMICS_AGENT_ACCOUNT_ACCESS_KEY
-              valueFrom:
-                secretKeyRef:
-                  key: access-key
-                  name: appd-agent-secret
+          - name: APP_ENTRY_POINT
+            value: "python /app/app.py"
+          - name: APPDYNAMICS_AGENT_VERSION
+            # Use latest version from https://pypi.org/project/appdynamics/#history
+            value: 21.12.2.4693
+          - name: APPDYNAMICS_AGENT_TIER_NAME
+            value: mypython-app-init
+          - name: APPDYNAMICS_AGENT_ACCOUNT_ACCESS_KEY
+            valueFrom:
+              secretKeyRef:
+                key: access-key
+                name: appd-agent-secret
           envFrom:
             - configMapRef:
                 name: appd-python-config
-        - name: proxy
-          image: appdynamics/dl-proxy:latest
-          imagePullPolicy: Always
-          env:
-            - name: APPDYNAMICS_DEBUG_LOG
-              value: "on"
-            - name: APPDYNAMICS_LOGGING_LEVEL
-              value: "debug"
-            - name: APPDYNAMICS_TCP_COMM_HOST
-              value: "0.0.0.0"
-            - name: APPDYNAMICS_TCP_COMM_PORT
-              value: "9091"
-            - name: APPDYNAMICS_TCP_PORT_RANGE
-              value: "10000-10100"
           ports:
-            - containerPort: 9091
-              protocol: TCP
-          resources:
-            limits:
-              cpu: 500m
-              memory: 900M
-            requests:
-              cpu: 400m
-              memory: 600M
+          - containerPort: 8080
+          volumeMounts:
+            - mountPath: /opt/appdynamics-python
+              name: appd-python-init
+      volumes:
+        - name: python-pipeline-samples
+          emptyDir: {}
       restartPolicy: Always
----
+# ---
 apiVersion: v1
 kind: Service
 metadata:
