@@ -62,9 +62,9 @@ spec:
                 secretKeyRef:
                   key: access-key
                   name: appd-agent-secret
-            envFrom:
-              - configMapRef:
-                  name: appd-python-config
+          envFrom:
+            - configMapRef:
+                name: appd-python-config
 
         - name: appdynamics-agent
           image: appdynamics/dl-proxy:latest
@@ -103,3 +103,4 @@ spec:
     - port: 80
       targetPort: 80
   type: LoadBalancer
+
