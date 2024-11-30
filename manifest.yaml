@@ -37,8 +37,8 @@ kind: Deployment
 metadata:
   name: python-pipeline-samples
 spec:
-  replicas: 5
-  revisionHistoryLimit: 5
+  replicas: 1
+  revisionHistoryLimit: 1
   selector:
     matchLabels:
       app: python-pipeline-samples
