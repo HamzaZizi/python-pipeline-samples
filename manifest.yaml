@@ -114,7 +114,7 @@ spec:
   selector:
     matchLabels:
       name: python-pipeline-samples
-  replicas: 1
+  replicas: 2
   template:
     metadata:
       labels:
@@ -134,18 +134,18 @@ spec:
           name: python-pipeline-samples
       containers:
         - name: python-pipeline-samplest
-          image: myrepo/python-app-no-appd:v1
+          image: hamzazizi/python-pipeline-samples:latest
           command: ["/bin/sh"]
           args: ["-c", "/opt/appdynamics-python/run-with-agent.sh"]
           imagePullPolicy: Always
           env:
           - name: APP_ENTRY_POINT
-            value: "python /app/app.py"
+            value: "python3 /python-pipeline-samples/app.py"
           - name: APPDYNAMICS_AGENT_VERSION
             # Use latest version from https://pypi.org/project/appdynamics/#history
             value: 21.12.2.4693
           - name: APPDYNAMICS_AGENT_TIER_NAME
-            value: mypython-app-init
+            value: python-pipeline-samples-app
           - name: APPDYNAMICS_AGENT_ACCOUNT_ACCESS_KEY
             valueFrom:
               secretKeyRef:
