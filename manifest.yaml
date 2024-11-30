@@ -1,4 +1,38 @@
-apiVersion: apps/v1
+# apiVersion: apps/v1
+# kind: Deployment
+# metadata:
+#   name: python-pipeline-samples
+# spec:
+#   replicas: 3
+#   revisionHistoryLimit: 3
+#   selector:
+#     matchLabels:
+#       app: python-pipeline-samples
+#   template:
+#     metadata:
+#       labels:
+#         app: python-pipeline-samples
+#     spec:
+#       containers:
+#       - image: hamzazizi/python-pipeline-samples:latest
+#         name: python-pipeline-samples
+#         ports:
+#         - containerPort: 80
+
+# ---
+# apiVersion: v1
+# kind: Service
+# metadata:
+#   name: python-pipeline-samples
+# spec:
+#   ports:
+#   - port: 80
+#     targetPort: 80
+#   selector:
+#     app: python-pipeline-samples
+
+
+    apiVersion: apps/v1
 kind: Deployment
 metadata:
   name: python-pipeline-samples
@@ -14,10 +48,48 @@ spec:
         app: python-pipeline-samples
     spec:
       containers:
-      - image: hamzazizi/python-pipeline-samples:latest
-        name: python-pipeline-samples
-        ports:
-        - containerPort: 80
+        - name: python-pipeline-samples
+          image: hamzazizi/python-pipeline-samples:latest
+          ports:
+            - containerPort: 80
+          env:
+            - name: APPDYNAMICS_AGENT_TIER_NAME
+              value: python-pipeline-samples
+            - name: APPDYNAMICS_AGENT_REUSE_NODE_NAME_PREFIX
+              value: python-service
+            - name: APPDYNAMICS_AGENT_ACCOUNT_ACCESS_KEY
+              valueFrom:
+                secretKeyRef:
+                  key: access-key
+                  name: appd-agent-secret
+            envFrom:
+              - configMapRef:
+                  name: appd-python-config
+
+        - name: appdynamics-agent
+          image: appdynamics/dl-proxy:latest
+          env:
+            - name: APPDYNAMICS_DEBUG_LOG
+              value: "on"
+            - name: APPDYNAMICS_LOGGING_LEVEL
+              value: "debug"
+            - name: APPDYNAMICS_TCP_COMM_HOST
+              value: "0.0.0.0"
+            - name: APPDYNAMICS_TCP_COMM_PORT
+              value: "9091"
+            - name: APPDYNAMICS_TCP_PORT_RANGE
+              value: "10000-10100"
+          ports:
+            - containerPort: 9091
+              protocol: TCP
+          resources:
+            limits:
+              cpu: 500m
+              memory: 900M
+            requests:
+              cpu: 400m
+              memory: 600M
+      restartPolicy: Always
 
 ---
 apiVersion: v1
@@ -25,8 +97,9 @@ kind: Service
 metadata:
   name: python-pipeline-samples
 spec:
-  ports:
-  - port: 80
-    targetPort: 80
   selector:
     app: python-pipeline-samples
+  ports:
+    - port: 80
+      targetPort: 80
+  type: LoadBalancer
