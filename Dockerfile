@@ -20,8 +20,16 @@ FROM python:3.7
 # Use latest version from https://pypi.org/project/appdynamics/#history
 ENV APPD_AGENT_VERSION=21.12.2.4693
 
-COPY ./python-pipeline-samples
-WORKDIR /python-pipeline-samples
+# Set working directory inside the container
+WORKDIR /app
+
+# Copy the necessary files from your local directory into the container
+COPY app.py /app/
+COPY requirements.txt /app/
+COPY appd-python-config.yaml /app/
+COPY .harness/ /app/.harness/
+COPY templates/ /app/templates/
+COPY docs/ /app/docs/
 RUN chmod +x ./app.py
 
 EXPOSE 8080
