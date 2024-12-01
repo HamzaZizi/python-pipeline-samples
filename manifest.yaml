@@ -56,10 +56,10 @@ spec:
           env:
             - name: APPDYNAMICS_AGENT_TIER_NAME
               value: "python-pipeline-samples-tier"
-            # - name: APPDYNAMICS_AGENT_REUSE_NODE_NAME_PREFIX
-            #   value: "py"
-            - name: APPDYNAMICS_AGENT_NODE_NAME
-              value: "your-manual-node-name"
+            - name: APPDYNAMICS_AGENT_REUSE_NODE_NAME_PREFIX
+              value: "python-app"
+            # - name: APPDYNAMICS_AGENT_NODE_NAME
+            #   value: "your-manual-node-name"
             - name: APPDYNAMICS_AGENT_ACCOUNT_ACCESS_KEY
               valueFrom:
                 secretKeyRef:
