@@ -62,9 +62,7 @@ spec:
               valueFrom:
                 secretKeyRef:
                   key: access-key
-                  name: appd-agent-secret
-            - name: APPDYNAMICS_AGENT_NODE_NAME
-              value: "python-service" 
+                  name: appd-agent-secret 
           envFrom:
             - configMapRef:
                 name: appd-python-config
