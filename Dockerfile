@@ -20,8 +20,8 @@ FROM python:3.7
 # Use latest version from https://pypi.org/project/appdynamics/#history
 ENV APPD_AGENT_VERSION=21.12.2.4693
 
-COPY python-pipeline-samples/ /app/
-WORKDIR /app
+COPY ./python-pipeline-samples
+WORKDIR /python-pipeline-samples
 RUN chmod +x ./app.py
 
 EXPOSE 8080
